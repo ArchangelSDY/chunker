@@ -4,12 +4,13 @@ import struct
 import unittest
 
 from chunks import Chunk
-from fields import UnsignedLongField
+from fields import UnsignedLongField, UnsignedShortField
 
 
-class OneFieldChunk(Chunk):
+class TestChunk(Chunk):
     Fields = (
-        UnsignedLongField('key'),
+        UnsignedLongField('long'),
+        UnsignedShortField('short'),
     )
 
     @staticmethod
@@ -23,13 +24,16 @@ class OneFieldChunk(Chunk):
             return False
 
 
+
 class ChunkTest(unittest.TestCase):
     def setUp(self):
         self.fp = StringIO.StringIO()
         sig = 0x01020304
         self.fp.write(struct.pack('<L', sig))
-        key = 10
-        self.fp.write(struct.pack('<L', key))
+        long = 10
+        self.fp.write(struct.pack('<L', long))
+        short = 5
+        self.fp.write(struct.pack('<H', short))
         self.fp.seek(0)
 
         self.fake_fp = StringIO.StringIO()
@@ -38,16 +42,17 @@ class ChunkTest(unittest.TestCase):
         self.fake_fp.seek(0)
 
     def test_match(self):
-        self.assertTrue(OneFieldChunk.matches(self.fp))
+        self.assertTrue(TestChunk.matches(self.fp))
         self.assertEquals(self.fp.tell(), 4)
 
-        self.assertFalse(OneFieldChunk.matches(self.fake_fp))
+        self.assertFalse(TestChunk.matches(self.fake_fp))
         self.assertEquals(self.fake_fp.tell(), 0)
 
     def test_populate(self):
-        self.assertTrue(OneFieldChunk.matches(self.fp))
-        c = OneFieldChunk(self.fp)
-        self.assertEquals(c.key, 10)
+        self.assertTrue(TestChunk.matches(self.fp))
+        c = TestChunk(self.fp)
+        self.assertEquals(c.long, 10)
+        self.assertEquals(c.short, 5)
 
     def tearDown(self):
         self.fp.close()

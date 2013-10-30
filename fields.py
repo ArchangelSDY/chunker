@@ -24,4 +24,4 @@ class UnsignedShortField(Field):
     def __init__(self, name, big_endian=False):
         endian = '>' if big_endian else '<'
         fmt = endian + 'H'
-        super(UnsignedLongField, self).__init__(name, fmt, 2)
+        super(UnsignedShortField, self).__init__(name, fmt, 2)
