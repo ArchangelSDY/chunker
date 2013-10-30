@@ -8,7 +8,7 @@ from fields import UnsignedLongField
 
 
 class OneFieldChunk(Chunk):
-    fields = (
+    Fields = (
         UnsignedLongField('key'),
     )
 
