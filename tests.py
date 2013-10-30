@@ -5,7 +5,7 @@ import unittest
 
 from chunks import Chunk
 from fields import UnsignedLongField, UnsignedShortField
-from parsers import Parser
+from parsers import Parser, ParseTimeoutException
 
 
 class OneFieldChunk(Chunk):
@@ -77,10 +77,15 @@ class ChunkTest(unittest.TestCase):
 
 
 class TwoChunksParser(Parser):
-    Chunk_Classes = (
+    ChunkClasses = (
         TwoFieldChunk,
         OneFieldChunk,
     )
+
+
+class QuickTimeoutParser(Parser):
+    Timeout = 0
+
 
 class ParserTest(unittest.TestCase):
     TempFile = 'test.tmp'
@@ -112,6 +117,13 @@ class ParserTest(unittest.TestCase):
         self.assertEquals(parser.chunks[0].long, 10)
         self.assertEquals(parser.chunks[0].short, 5)
         self.assertEquals(parser.chunks[1].long, 15)
+        self.assertFalse(parser.is_timeout)
+
+    def test_timeout(self):
+        with self.assertRaises(ParseTimeoutException):
+            parser = QuickTimeoutParser(self.fp)
+            parser.parse()
+            self.assertTrue(parser.is_timeout)
 
     def tearDown(self):
         self.fp.close()
