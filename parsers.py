@@ -6,7 +6,7 @@ class ParseTimeoutException(Exception):
     pass
 
 
-class Parser:
+class Parser(object):
     ChunkClasses = ()
     Timeout = 60
 
@@ -33,6 +33,7 @@ class Parser:
                     chunk = chunk_cls(self.fp, self)
                     chunk.populate()
                     self.chunks.append(chunk)
+                    print chunk
                     break
 
             if self.is_timeout:
@@ -46,3 +47,12 @@ class Parser:
 
         self._timeout_timer = threading.Timer(self.__class__.Timeout, handler)
         self._timeout_timer.start()
+
+    def close(self):
+        self.fp.close()
+
+
+class FileParser(Parser):
+    def __init__(self, path):
+        fp = open(path, 'rb')
+        super(FileParser, self).__init__(fp)

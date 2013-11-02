@@ -25,13 +25,15 @@ class Chunk(object):
     def populate(self):
         for field in self.fields:
             field.populate(self.fp, self)
+            # print '%s: %s @ %d' % (field.name, field.value, self.fp.tell())
 
     def __str__(self):
         dumps = []
-        dumps.append('\n----------')
+        dumps.append(self.__class__.__name__)
+        dumps.append('----------')
         for field in self.fields:
             dumps.append('%s: %s' % (field.name, field.value))
-        dumps.append('----------\n')
+        dumps.append('----------')
         return '\n'.join(dumps)
 
 
