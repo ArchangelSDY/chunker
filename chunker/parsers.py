@@ -15,9 +15,9 @@ class Parser(object):
     """
     Parse chunks from file or streaming.
 
-    - In file mode, `total_length` can be left None and will be read from
+    - In file mode, :attr:`total_length` can be left None and will be read from
       file system.
-    - In streaming mode, you **must** provide `total_length` to specify the
+    - In streaming mode, you **must** provide :attr:`total_length` to specify the
       end of the stream.
 
     :param fp: File object to be read from.
@@ -45,7 +45,7 @@ class Parser(object):
         """
         Start parsing.
 
-        If you want more debug info, call `enable_debug` before parsing.
+        If you want more debug info, call :meth:`enable_debug` before parsing.
         """
         self._set_timeout()
 

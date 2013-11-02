@@ -16,7 +16,7 @@ class Chunk(object):
 
     1. Define its fields. See fields for more information.
 
-    2. Define a static `matches` method to judge if the following bytes match this type of chunk.
+    2. Define a static :meth:`matches` method to judge if the following bytes match this type of chunk.
 
     Example::
 
@@ -66,7 +66,7 @@ class Chunk(object):
         Read next a few bytes to judge if the following data match this type
         of chunk.
 
-        You should override this method or it will return False by default.
+        You should override this method or it will return :const:`False` by default.
 
         :param fp: File object to read from.
         :returns: If the following bytes match this chunk type.
