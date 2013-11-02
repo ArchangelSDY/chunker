@@ -1,3 +1,5 @@
+import __future__
+
 import os
 import threading
 
@@ -36,8 +38,8 @@ class Parser(object):
                     self.chunks.append(chunk)
 
                     if self.is_debug:
-                        print chunk
-                        print 'Now at', hex(self.fp.tell())
+                        print(chunk)
+                        print('Now at', hex(self.fp.tell()))
                     break
 
             if self.is_timeout:

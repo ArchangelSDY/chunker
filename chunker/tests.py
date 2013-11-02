@@ -1,7 +1,12 @@
 import os
-import StringIO
 import struct
+import sys
 import unittest
+
+if sys.version_info.major == 3:
+    from io import BytesIO
+else:
+    from StringIO import StringIO as BytesIO
 
 from chunks import Chunk
 from fields import UnsignedLongField, UnsignedShortField
@@ -41,10 +46,9 @@ class TwoFieldChunk(Chunk):
             return False
 
 
-
 class ChunkTest(unittest.TestCase):
     def setUp(self):
-        self.fp = StringIO.StringIO()
+        self.fp = BytesIO()
         sig = 0x01020304
         self.fp.write(struct.pack('<L', sig))
         long = 10
@@ -53,24 +57,24 @@ class ChunkTest(unittest.TestCase):
         self.fp.write(struct.pack('<H', short))
         self.fp.seek(0)
 
-        self.fake_fp = StringIO.StringIO()
+        self.fake_fp = BytesIO()
         sig = 0x04030201
         self.fake_fp.write(struct.pack('<L', sig))
         self.fake_fp.seek(0)
 
     def test_match(self):
         self.assertTrue(TwoFieldChunk.matches(self.fp))
-        self.assertEquals(self.fp.tell(), 4)
+        self.assertEqual(self.fp.tell(), 4)
 
         self.assertFalse(TwoFieldChunk.matches(self.fake_fp))
-        self.assertEquals(self.fake_fp.tell(), 0)
+        self.assertEqual(self.fake_fp.tell(), 0)
 
     def test_populate(self):
         self.assertTrue(TwoFieldChunk.matches(self.fp))
         c = TwoFieldChunk(self.fp, None)
         c.populate()
-        self.assertEquals(c.long, 10)
-        self.assertEquals(c.short, 5)
+        self.assertEqual(c.long, 10)
+        self.assertEqual(c.short, 5)
 
     def tearDown(self):
         self.fp.close()
@@ -115,9 +119,9 @@ class ParserTest(unittest.TestCase):
     def test_parse(self):
         parser = TwoChunksParser(self.fp)
         parser.parse()
-        self.assertEquals(parser.chunks[0].long, 10)
-        self.assertEquals(parser.chunks[0].short, 5)
-        self.assertEquals(parser.chunks[1].long, 15)
+        self.assertEqual(parser.chunks[0].long, 10)
+        self.assertEqual(parser.chunks[0].short, 5)
+        self.assertEqual(parser.chunks[1].long, 15)
         self.assertFalse(parser.is_timeout)
 
     def test_timeout(self):

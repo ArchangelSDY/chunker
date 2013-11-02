@@ -1,7 +1,7 @@
 import os
 
 
-class OffsetFilePtr(object):
+class OffsetFilePtr:
     def __init__(self, fp, offset, total_length):
         self.fp = fp
         self.offset = offset

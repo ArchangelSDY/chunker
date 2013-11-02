@@ -1,3 +1,5 @@
+import __future__
+
 import copy
 import os
 
@@ -6,7 +8,7 @@ class Chunk(object):
     Fields = ()
 
     def __new__(cls, *args, **kargs):
-        instance = super(Chunk, cls).__new__(cls, *args, **kargs)
+        instance = super(Chunk, cls).__new__(cls)
         instance.fields = copy.deepcopy(cls.Fields)
         instance.fields_map = {f.name: f for f in instance.fields}
         return instance
@@ -26,8 +28,8 @@ class Chunk(object):
         for field in self.fields:
             field.populate(self.fp, self)
             if self.parser is not None and self.parser.is_debug:
-                print '%s: %s @ %d' % \
-                    (field.name, field.value, self.fp.tell())
+                print('%s: %s @ %d' % (
+                    field.name, field.value, self.fp.tell()))
 
     def __str__(self):
         dumps = []

@@ -1,2 +1,2 @@
 test:
-	python tests.py
+	python chunker/tests.py
