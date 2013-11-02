@@ -1,20 +1,39 @@
+import copy
+import os
+
+
 class Chunk(object):
     Fields = ()
 
     def __new__(cls, *args, **kargs):
-        cls.Fields_Map = {f.name: f for f in cls.Fields}
-        return super(Chunk, cls).__new__(cls, *args, **kargs)
+        instance = super(Chunk, cls).__new__(cls, *args, **kargs)
+        instance.fields = copy.deepcopy(cls.Fields)
+        instance.fields_map = {f.name: f for f in instance.fields}
+        return instance
 
     def __init__(self, fp):
         self.populate(fp)
 
     def __getattr__(self, key):
-        return self.__class__.Fields_Map[key].value
+        return self.fields_map[key].value
 
     @staticmethod
     def matches(fp):
         return False
 
     def populate(self, fp):
-        for field in self.__class__.Fields:
-            field.populate(fp)
+        for field in self.fields:
+            field.populate(fp, self)
+
+    def __str__(self):
+        dumps = []
+        dumps.append('\n----------')
+        for field in self.fields:
+            dumps.append('%s: %s' % (field.name, field.value))
+        dumps.append('----------\n')
+        return '\n'.join(dumps)
+
+
+class ToTheEndChunk(Chunk):
+    def populate(self, fp):
+        fp.seek(0, os.SEEK_END)
