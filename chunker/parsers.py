@@ -5,10 +5,24 @@ import threading
 
 
 class ParseTimeoutException(Exception):
+    """
+    Exception indicating that timeout occurs when parsing.
+    """
     pass
 
 
 class Parser(object):
+    """
+    Parse chunks from file or streaming.
+
+    - In file mode, `total_length` can be left None and will be read from
+      file system.
+    - In streaming mode, you **must** provide `total_length` to specify the
+      end of the stream.
+
+    :param fp: File object to be read from.
+    :param total_length: Total length of the source.
+    """
     ChunkClasses = ()
     Timeout = 60
 
@@ -28,6 +42,11 @@ class Parser(object):
         return os.fstat(fp.fileno()).st_size
 
     def parse(self):
+        """
+        Start parsing.
+
+        If you want more debug info, call `enable_debug` before parsing.
+        """
         self._set_timeout()
 
         while self.fp.tell() < self.total_length:
@@ -55,13 +74,24 @@ class Parser(object):
         self._timeout_timer.start()
 
     def enable_debug(self):
+        """
+        Print debugging info when parsing.
+        """
         self.is_debug = True
 
     def close(self):
+        """
+        Close the file object.
+        """
         self.fp.close()
 
 
 class FileParser(Parser):
+    """
+    Parse from file.
+
+    :param path: File path.
+    """
     def __init__(self, path):
         fp = open(path, 'rb')
         super(FileParser, self).__init__(fp)
