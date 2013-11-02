@@ -19,6 +19,7 @@ class Parser(object):
         self.chunks = []
         self._timeout_timer = None
         self.is_timeout = False
+        self.is_debug = False
 
     @staticmethod
     def get_file_length(fp):
@@ -33,7 +34,10 @@ class Parser(object):
                     chunk = chunk_cls(self.fp, self)
                     chunk.populate()
                     self.chunks.append(chunk)
-                    print chunk
+
+                    if self.is_debug:
+                        print chunk
+                        print 'Now at', hex(self.fp.tell())
                     break
 
             if self.is_timeout:
@@ -47,6 +51,9 @@ class Parser(object):
 
         self._timeout_timer = threading.Timer(self.__class__.Timeout, handler)
         self._timeout_timer.start()
+
+    def enable_debug(self):
+        self.is_debug = True
 
     def close(self):
         self.fp.close()

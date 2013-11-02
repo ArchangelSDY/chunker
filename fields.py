@@ -38,6 +38,13 @@ class UnsignedShortField(BytesField):
         super(UnsignedShortField, self).__init__(name, fmt, 2)
 
 
+class UnsignedCharField(BytesField):
+    def __init__(self, name, big_endian=False):
+        endian = '>' if big_endian else '<'
+        fmt = endian + 'B'
+        super(UnsignedCharField, self).__init__(name, fmt, 1)
+
+
 class VariableLengthField(Field):
     def __init__(self, name, length_field_name):
         super(VariableLengthField, self).__init__(name)
@@ -53,7 +60,22 @@ class StringField(VariableLengthField):
         self.value = fp.read(self.length)
 
 
-class SkipField(VariableLengthField):
+class SkipBasedOnCalcField(Field):
+    def __init__(self, name, calc_func):
+        super(SkipBasedOnCalcField, self).__init__(name)
+        self.calc_func = calc_func
+
     def populate(self, fp, chunk):
-        super(SkipField, self).populate(fp, chunk)
+        offset = self.calc_func(chunk)
+        fp.seek(offset, os.SEEK_CUR)
+
+
+class SkipBasedOnLengthField(VariableLengthField):
+    def populate(self, fp, chunk):
+        super(SkipBasedOnLengthField, self).populate(fp, chunk)
         fp.seek(self.length, os.SEEK_CUR)
+
+
+class SkipToTheEndField(Field):
+    def populate(self, fp, chunk):
+        fp.seek(chunk.parser.total_length, os.SEEK_SET)

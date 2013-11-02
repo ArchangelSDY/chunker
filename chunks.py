@@ -25,7 +25,9 @@ class Chunk(object):
     def populate(self):
         for field in self.fields:
             field.populate(self.fp, self)
-            # print '%s: %s @ %d' % (field.name, field.value, self.fp.tell())
+            if self.parser.is_debug:
+                print '%s: %s @ %d' % \
+                    (field.name, field.value, self.fp.tell())
 
     def __str__(self):
         dumps = []
