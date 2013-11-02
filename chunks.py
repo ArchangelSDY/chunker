@@ -25,7 +25,7 @@ class Chunk(object):
     def populate(self):
         for field in self.fields:
             field.populate(self.fp, self)
-            if self.parser.is_debug:
+            if self.parser is not None and self.parser.is_debug:
                 print '%s: %s @ %d' % \
                     (field.name, field.value, self.fp.tell())
 
