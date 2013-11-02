@@ -67,7 +67,8 @@ class ChunkTest(unittest.TestCase):
 
     def test_populate(self):
         self.assertTrue(TwoFieldChunk.matches(self.fp))
-        c = TwoFieldChunk(self.fp)
+        c = TwoFieldChunk(self.fp, None)
+        c.populate()
         self.assertEquals(c.long, 10)
         self.assertEquals(c.short, 5)
 

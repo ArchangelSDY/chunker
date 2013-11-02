@@ -11,8 +11,9 @@ class Chunk(object):
         instance.fields_map = {f.name: f for f in instance.fields}
         return instance
 
-    def __init__(self, fp):
-        self.populate(fp)
+    def __init__(self, fp, parser):
+        self.fp = fp
+        self.parser = parser
 
     def __getattr__(self, key):
         return self.fields_map[key].value
@@ -21,9 +22,9 @@ class Chunk(object):
     def matches(fp):
         return False
 
-    def populate(self, fp):
+    def populate(self):
         for field in self.fields:
-            field.populate(fp, self)
+            field.populate(self.fp, self)
 
     def __str__(self):
         dumps = []
