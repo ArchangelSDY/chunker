@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Parsers &mdash; Chunker 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Chunker 1.0 documentation" href="index.html" />
+    <link rel="next" title="Chunks" href="chunks.html" />
+    <link rel="prev" title="Chunker - Easy Chunk-Based File Structure Parsing" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="chunks.html" title="Chunks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Chunker - Easy Chunk-Based File Structure Parsing"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="parsers">
+<h1>Parsers<a class="headerlink" href="#parsers" title="Permalink to this headline">¶</a></h1>
+<p>A parser defines chunk types it could meet during parsing.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DataParser</span><span class="p">(</span><span class="n">FileParser</span><span class="p">):</span>
+    <span class="n">ChunkClasses</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">HeaderChunk</span><span class="p">,</span>
+        <span class="n">DataChunk</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="parsers.Parser">
+<em class="property">class </em><tt class="descclassname">parsers.</tt><tt class="descname">Parser</tt><big>(</big><em>fp</em>, <em>total_length=None</em><big>)</big><a class="headerlink" href="#parsers.Parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse chunks from file or streaming.</p>
+<ul class="simple">
+<li>In file mode, <a class="reference internal" href="#Parser.total_length" title="Parser.total_length"><tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt></a> can be left None and will be read from
+file system.</li>
+<li>In streaming mode, you <strong>must</strong> provide <a class="reference internal" href="#Parser.total_length" title="Parser.total_length"><tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt></a> to specify the
+end of the stream.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fp</strong> &#8211; File object to be read from.</li>
+<li><strong>total_length</strong> &#8211; Total length of the source.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Throws ParseTimeoutException:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">Timeout. Default is 60s.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="Parser.total_length">
+<tt class="descname">total_length</tt><a class="headerlink" href="#Parser.total_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total length of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Parser.chunks">
+<tt class="descname">chunks</tt><a class="headerlink" href="#Parser.chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of chunks inside.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="parsers.FileParser">
+<em class="property">class </em><tt class="descclassname">parsers.</tt><tt class="descname">FileParser</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#parsers.FileParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse from file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> &#8211; File path.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="parsers.ParseTimeoutException">
+<em class="property">exception </em><tt class="descclassname">parsers.</tt><tt class="descname">ParseTimeoutException</tt><a class="headerlink" href="#parsers.ParseTimeoutException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception indicating that timeout occurs when parsing.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Chunker - Easy Chunk-Based File Structure Parsing</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="chunks.html"
+                        title="next chapter">Chunks</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/parsers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="chunks.html" title="Chunks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Chunker - Easy Chunk-Based File Structure Parsing"
+             >previous</a> |</li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Archangel_SDY.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Fields &mdash; Chunker 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Chunker 1.0 documentation" href="index.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="Chunks" href="chunks.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="chunks.html" title="Chunks"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="fields">
+<h1>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h1>
+<p>Fields are data components within a chunk. When a chunk populating, data inside are parsed and populated by the order of their defination in <tt class="xref py py-attr docutils literal"><span class="pre">Chunk.Fields</span></tt>. Then we can access them as attributes of the chunk by their names.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Feel free to send me pull requests on <a class="reference external" href="https://github.com/ArchangelSDY/chunker">GitHub</a> if fields listed here cannot meet your needs.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DataChunk</span><span class="p">(</span><span class="n">Chunk</span><span class="p">):</span>
+    <span class="c"># Fields are parsed in this order</span>
+    <span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+        <span class="n">StringField</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;extra_length&#39;</span><span class="p">),</span>
+        <span class="n">SkipBasedOnLengthField</span><span class="p">(</span><span class="s">&#39;extra&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;extra_length&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="fields.Field">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">Field</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#fields.Field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base field class.</p>
+<p>It&#8217;s abstract and cannot be used directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Field name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="fixed-length-fields">
+<h2>Fixed Length Fields<a class="headerlink" href="#fixed-length-fields" title="Permalink to this headline">¶</a></h2>
+<p>Fixed length fields are used for simple data with fixed length.</p>
+<dl class="class">
+<dt id="fields.BytesField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">BytesField</tt><big>(</big><em>name</em>, <em>fmt</em>, <em>length</em><big>)</big><a class="headerlink" href="#fields.BytesField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for fixed length fields.</p>
+<p>It reads fixed count of bytes and decode them using <tt class="xref py py-meth docutils literal"><span class="pre">struct.unpack()</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>fmt</strong> &#8211; Format to be passed to <tt class="xref py py-meth docutils literal"><span class="pre">struct.unpack()</span></tt>.</li>
+<li><strong>length</strong> &#8211; Field length in bytes.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.UnsignedLongField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">UnsignedLongField</tt><big>(</big><em>name</em>, <em>big_endian=False</em><big>)</big><a class="headerlink" href="#fields.UnsignedLongField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read 4 bytes and convert them into an unsigned long value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>big_endian</strong> &#8211; If should be decoded in big-endian bytes order. Default is <tt class="xref py py-const docutils literal"><span class="pre">False</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.UnsignedShortField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">UnsignedShortField</tt><big>(</big><em>name</em>, <em>big_endian=False</em><big>)</big><a class="headerlink" href="#fields.UnsignedShortField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read 2 bytes and convert them into an unsigned short value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>big_endian</strong> &#8211; If should be decoded in big-endian bytes order. Default is <tt class="xref py py-const docutils literal"><span class="pre">False</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.UnsignedCharField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">UnsignedCharField</tt><big>(</big><em>name</em>, <em>big_endian=False</em><big>)</big><a class="headerlink" href="#fields.UnsignedCharField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read 1 byte and convert them into an unsigned char value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>big_endian</strong> &#8211; If should be decoded in big-endian bytes order. Default is <tt class="xref py py-const docutils literal"><span class="pre">False</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="variable-length-fields">
+<h2>Variable Length Fields<a class="headerlink" href="#variable-length-fields" title="Permalink to this headline">¶</a></h2>
+<p>Variable length fields are used for data with variable length. They usually rely on other fields to provide their lengths.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DataChunk</span><span class="p">(</span><span class="n">Chunk</span><span class="p">):</span>
+    <span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;length&#39;</span><span class="p">),</span>
+        <span class="n">StringField</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;length&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="fields.VariableLengthField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">VariableLengthField</tt><big>(</big><em>name</em>, <em>length_field_name</em><big>)</big><a class="headerlink" href="#fields.VariableLengthField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for field with variable length. Its length is based on another field.</p>
+<p>When populating, it simply read length and doesn&#8217;t move on <tt class="xref py py-obj docutils literal"><span class="pre">fp</span></tt> or read any data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>length_field_name</strong> &#8211; Field name in the same chunk indicating the length of this field.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.StringField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">StringField</tt><big>(</big><em>name</em>, <em>length_field_name</em><big>)</big><a class="headerlink" href="#fields.StringField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data with variable length. Its length is based on another field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>length_field_name</strong> &#8211; Field name in the same chunk indicating the length of this field.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="skip-fields">
+<h2>Skip Fields<a class="headerlink" href="#skip-fields" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes we are not interested in all fields and only want to extract part of them. In these conditions, we can use skip fields as placeholders. Skip fields simply move forward without reading any bytes so that we can save memory and parse faster.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DataChunk</span><span class="p">(</span><span class="n">Chunk</span><span class="p">):</span>
+    <span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+
+        <span class="c"># Skip data whose length is extracted from &#39;data_length&#39; field.</span>
+        <span class="n">SkipBasedOnLengthField</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+
+        <span class="c"># Skip data whose length is 3 times of the &#39;data_length&#39;.</span>
+        <span class="n">SkipBasedOnCalcField</span><span class="p">(</span><span class="s">&#39;detailed_data&#39;</span><span class="p">,</span> <span class="n">calc_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">data_length</span><span class="p">),</span>
+
+        <span class="c"># Skip data left to end of the file object.</span>
+        <span class="n">SkipToTheEndField</span><span class="p">(</span><span class="s">&#39;extra&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="fields.SkipBasedOnLengthField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">SkipBasedOnLengthField</tt><big>(</big><em>name</em>, <em>length_field_name</em><big>)</big><a class="headerlink" href="#fields.SkipBasedOnLengthField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skip data with variable length. Its length is based on another field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>length_field_name</strong> &#8211; Field name in the same chunk indicating the length of this field.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.SkipBasedOnCalcField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">SkipBasedOnCalcField</tt><big>(</big><em>name</em>, <em>calc_func</em><big>)</big><a class="headerlink" href="#fields.SkipBasedOnCalcField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skip data with variable length. Its length is calculated from <tt class="xref py py-func docutils literal"><span class="pre">calc_func()</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; Field name.</li>
+<li><strong>calc_func</strong> &#8211; Function to calculate the length to skip. When populating, this <tt class="xref py py-obj docutils literal"><span class="pre">chunk</span></tt> will be passed to it as a parameter.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+    <span class="n">SkipBasedOnCalcField</span><span class="p">(</span><span class="s">&#39;skip&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">data_length</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="fields.SkipToTheEndField">
+<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">SkipToTheEndField</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#fields.SkipToTheEndField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skip data to the end.</p>
+<p>The end depends on <a class="reference internal" href="parsers.html#Parser.total_length" title="Parser.total_length"><tt class="xref py py-attr docutils literal"><span class="pre">Parser.total_length</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Field name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Fields</a><ul>
+<li><a class="reference internal" href="#fixed-length-fields">Fixed Length Fields</a></li>
+<li><a class="reference internal" href="#variable-length-fields">Variable Length Fields</a></li>
+<li><a class="reference internal" href="#skip-fields">Skip Fields</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="chunks.html"
+                        title="previous chapter">Chunks</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils.html"
+                        title="next chapter">Utils</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/fields.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="chunks.html" title="Chunks"
+             >previous</a> |</li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Archangel_SDY.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

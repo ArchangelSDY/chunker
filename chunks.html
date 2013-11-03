@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chunks &mdash; Chunker 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Chunker 1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="chunks">
+<h1>Chunks<a class="headerlink" href="#chunks" title="Permalink to this headline">¶</a></h1>
+<p>A file usually contains many types of chunks. In most occasions, chunks are not arranged in a fixed order. So we need to use <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> to read a few bytes first to detect if the following data match the specific chunk type.</p>
+<dl class="class">
+<dt id="chunks.Chunk">
+<em class="property">class </em><tt class="descclassname">chunks.</tt><tt class="descname">Chunk</tt><big>(</big><em>fp</em>, <em>parser</em><big>)</big><a class="headerlink" href="#chunks.Chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk in the file. A chunk usually contains a signature indicating its
+type, and a group of data fields.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fp</strong> &#8211; File object to read from.</li>
+<li><strong>parser</strong> &#8211; The parser it belongs to. It&#8217;s optional and you can leave it None.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To define your chunk class, you should follow these steps:</p>
+<ol class="arabic simple">
+<li>Define its fields. Fields are populated in this order. See <a class="reference internal" href="fields.html"><em>Fields</em></a> for more information.</li>
+<li>Define a static <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> method to judge if the following bytes match this type of chunk.</li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="k">class</span> <span class="nc">DataChunk</span><span class="p">:</span>
+    <span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">),</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+        <span class="n">StringField</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c"># IMPORTANT! Reset position if you need to populate this type</span>
+        <span class="c"># field or type doesn&#39;t match</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_CUR</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">type</span> <span class="o">==</span> <span class="mh">0x01020304</span>
+
+<span class="k">if</span> <span class="n">DataChunk</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">DataChunk</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="c"># Access field value by its name</span>
+</pre></div>
+</div>
+<dl class="staticmethod">
+<dt id="chunks.Chunk.matches">
+<em class="property">static </em><tt class="descname">matches</tt><big>(</big><em>fp</em><big>)</big><a class="headerlink" href="#chunks.Chunk.matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read next a few bytes to judge if the following data match this type
+of chunk.</p>
+<p>You should override this method or it will return <tt class="xref py py-const docutils literal"><span class="pre">False</span></tt> by default.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fp</strong> &#8211; File object to read from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the following bytes match this chunk type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="chunks.Chunk.populate">
+<tt class="descname">populate</tt><big>(</big><big>)</big><a class="headerlink" href="#chunks.Chunk.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate chunk fields. After that, you can access each field data
+directly by field name.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/chunks.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Archangel_SDY.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
