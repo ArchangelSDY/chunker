@@ -80,15 +80,16 @@ class Chunk(object):
         """
         for field in self.fields:
             field.populate(self.fp, self)
-            if self.parser is not None and self.parser.is_debug:
-                print('%s: %s @ %d' % (
-                    field.name, field.value, self.fp.tell()))
+            # if self.parser is not None and self.parser.is_debug:
+            #     print('%s: %s @ %s' % (
+            #         field.name, field.value, hex(self.fp.tell())))
 
     def __str__(self):
         dumps = []
+        dumps.append('----------')
         dumps.append(self.__class__.__name__)
         dumps.append('----------')
         for field in self.fields:
             dumps.append('%s: %s' % (field.name, field.value))
-        dumps.append('----------')
+        dumps.append('==========')
         return '\n'.join(dumps)
