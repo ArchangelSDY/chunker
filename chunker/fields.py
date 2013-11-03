@@ -26,7 +26,7 @@ class Field(object):
 
 class BytesField(Field):
     """
-    Base class for binary field classes.
+    Base class for fixed length fields.
 
     It reads fixed count of bytes and decode them using :meth:`struct.unpack`.
 

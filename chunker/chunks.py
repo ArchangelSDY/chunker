@@ -14,7 +14,7 @@ class Chunk(object):
 
     To define your chunk class, you should follow these steps:
 
-    1. Define its fields. See fields for more information.
+    1. Define its fields. Fields are populated in this order. See :doc:`fields` for more information.
 
     2. Define a static :meth:`matches` method to judge if the following bytes match this type of chunk.
 

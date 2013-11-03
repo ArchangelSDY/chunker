@@ -22,6 +22,7 @@ class Parser(object):
 
     :param fp: File object to be read from.
     :param total_length: Total length of the source.
+    :throws ParseTimeoutException: Timeout. Default is 60s.
     """
     ChunkClasses = ()
     Timeout = 60
