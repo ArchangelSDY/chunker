@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(
-    name='Chunker',
+    name='chunker',
     version='1.0',
     description='Easy Chunk-Based File Structure Parser',
     author='Archangel_SDY',
