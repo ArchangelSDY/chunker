@@ -16,28 +16,30 @@ class Chunk(object):
 
     1. Define its fields. Fields are populated in this order. See :doc:`fields` for more information.
 
-    2. Define a static :meth:`matches` method to judge if the following bytes match this type of chunk.
+    2. Define a :meth:`matches` or :meth:`protected_matches` class method to judge if the following bytes match this type of chunk.
+
+        * Override :meth:`matches` to handle :attr:`fp` state by yourself.
+        * Override :meth:`protected_matches` to get :attr:`fp` state auto saved.
 
     Example::
 
         import os
         import struct
 
-        class DataChunk:
+        from chunker.chunks import Chunk
+
+        class DataChunk(Chunk):
             Fields = (
+                UnsignedLongField('sig'),   # 0x01020304
                 UnsignedLongField('type'),
                 UnsignedLongField('data_length'),
                 StringField('data', length_field_name='data_length'),
             )
 
-            @staticmethod
-            def matches(fp):
+            @classmethod
+            def protected_matches(fp):
                 buf = fp.read(4)
                 type = struct.unpack('>H', buf)[0]
-
-                # IMPORTANT! Reset position if you need to populate this type
-                # field or type doesn't match
-                fp.seek(-4, os.SEEK_CUR)
 
                 return type == 0x01020304
 
@@ -60,13 +62,33 @@ class Chunk(object):
     def __getattr__(self, key):
         return self.fields_map[key].value
 
-    @staticmethod
-    def matches(fp):
+    @classmethod
+    def matches(cls, fp):
         """
         Read next a few bytes to judge if the following data match this type
         of chunk.
 
-        You should override this method or it will return :const:`False` by default.
+        It calls :meth:`protected_matches` and restores :attr:`fp` state by default.
+
+        You can override this to avoid saving :attr:`fp` state.
+
+        :param fp: File object to read from.
+        :returns: If the following bytes match this chunk type.
+        """
+        fp.save_state()
+        matches = cls.protected_matches(fp)
+        fp.restore_state()
+        return matches
+
+    @classmethod
+    def protected_matches(cls, fp):
+        """
+        The difference between :meth:`protected_matches` and :meth:`matches` is that if you override this, you can get your :attr:`fp` state auto saved.
+
+        You only need to override one of them:
+
+        * Override :meth:`matches` to handle :attr:`fp` state by yourself.
+        * Override :meth:`protected_matches` to get :attr:`fp` state auto saved.
 
         :param fp: File object to read from.
         :returns: If the following bytes match this chunk type.

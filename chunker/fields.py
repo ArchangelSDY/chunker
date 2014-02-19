@@ -152,12 +152,12 @@ class SkipToTheEndField(Field):
     """
     Skip data to the end.
 
-    The end depends on :attr:`Parser.total_length`.
+    The end depends on :attr:`fp.total_length`.
 
     :param name: Field name.
     """
     def populate(self, fp, chunk):
         if chunk.parser is not None:
-            fp.seek(chunk.parser.total_length, os.SEEK_SET)
+            fp.seek(0, os.SEEK_END)
         else:
             raise AttributeError('No parser is provided')

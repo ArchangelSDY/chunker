@@ -1,18 +1,33 @@
 import os
 
 
-class OffsetFilePtr:
+class FilePtr:
     """
-    A wrapper for file object to maintain a sub file in original stream.
+    A wrapper for file object to maintain some more states during parsing.
+
+    - In file mode, :attr:`total_length` can be left None and will be read from
+      file system.
+    - In streaming mode, you **must** provide :attr:`total_length` to specify the
+      end of the stream.
 
     :param fp: Original file object.
-    :param offset: Start position of the sub file.
-    :param total_length: Length of the sub file.
+    :param total_length: Length of this.
+    :param offset: Offset to the original file.
     """
-    def __init__(self, fp, offset, total_length):
+    def __init__(self, fp, total_length=None, offset=0):
         self.fp = fp
         self.offset = offset
-        self.total_length = total_length
+        if total_length is not None:
+            self.total_length = total_length
+        else:
+            self.total_length = FilePtr.get_file_length(fp)
+
+    @staticmethod
+    def get_file_length(fp):
+        """
+        Get length of the file from local file system.
+        """
+        return os.fstat(fp.fileno()).st_size
 
     def read(self, n):
         """
@@ -23,7 +38,7 @@ class OffsetFilePtr:
         """
         return self.fp.read(n)
 
-    def seek(self, pos, mode):
+    def seek(self, pos, mode=os.SEEK_SET):
         """
         Seek position in sub file.
 
@@ -54,3 +69,15 @@ class OffsetFilePtr:
         self.fp = None
         self.offset = 0
         self.total_length = 0
+
+    def save_state(self):
+        """
+        Save internal state.
+        """
+        self._saved_pos = self.tell()
+
+    def restore_state(self):
+        """
+        Restore last internal state.
+        """
+        self.seek(self._saved_pos, os.SEEK_SET)

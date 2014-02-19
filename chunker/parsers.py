@@ -3,6 +3,8 @@ import __future__
 import os
 import threading
 
+from utils import FilePtr
+
 
 class ParseTimeoutException(Exception):
     """
@@ -28,11 +30,10 @@ class Parser(object):
     Timeout = 60
 
     def __init__(self, fp, total_length=None):
-        self.fp = fp
-        if total_length is not None:
-            self.total_length = total_length
+        if isinstance(fp, FilePtr):
+            self.fp = fp
         else:
-            self.total_length = Parser.get_file_length(fp)
+            self.fp = FilePtr(fp, total_length)
         self.chunks = []
         self._timeout_timer = None
         self.is_timeout = False
@@ -50,7 +51,7 @@ class Parser(object):
         """
         self._set_timeout()
 
-        while self.fp.tell() < self.total_length:
+        while self.fp.tell() < self.fp.total_length:
             for chunk_cls in self.__class__.ChunkClasses:
                 if chunk_cls.matches(self.fp):
                     chunk = chunk_cls(self.fp, self)

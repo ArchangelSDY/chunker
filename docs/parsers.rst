@@ -13,9 +13,9 @@ Example::
 
 .. autoclass:: parsers.Parser
 
-    .. attribute:: total_length
+    .. attribute:: fp
 
-        Total length of the stream.
+        FilePtr object to read.
 
     .. attribute:: chunks
 

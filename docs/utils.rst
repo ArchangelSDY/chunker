@@ -1,5 +1,5 @@
 Utils
 ===================================
 
-.. autoclass:: utils.OffsetFilePtr
+.. autoclass:: utils.FilePtr
     :members:

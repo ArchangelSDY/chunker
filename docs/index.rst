@@ -62,7 +62,7 @@ An example printing out file names in a `zip <http://en.wikipedia.org/wiki/Zip_%
 
         def populate(self):
             # Skip the left
-            self.fp.seek(self.parser.total_length)
+            self.fp.seek(0, os.SEEK_END)
 
     class ZipParser(FileParser):
         ChunkClasses = (
