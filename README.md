@@ -14,11 +14,16 @@ You can install Chunker with pip:
 $ pip install chunker
 ```
 
+Change Logs
+-----------
+* v1.1 `Chunk.safe_matches()` to auto restore offset before matching.
+
+* v1.0 First version.
+
 Todos
 -----
 Here are some parts that are not complete or I'm not very satisfied with:
 
 * More pre-defined field types.
-* Improve Chunk.matches. It's still a bit complicated at present.
 
 Feel free to send me pull requests if you have any other idea to improve Chunker.
