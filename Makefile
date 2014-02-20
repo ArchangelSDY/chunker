@@ -1,2 +1,2 @@
 test:
-	python chunker/tests.py
+	cd chunker && python tests.py
