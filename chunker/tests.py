@@ -11,6 +11,7 @@ else:
 from chunks import Chunk
 from fields import UnsignedLongField, UnsignedShortField
 from parsers import Parser, ParseTimeoutException
+from utils import FilePtr
 
 
 class OneFieldChunk(Chunk):
@@ -18,11 +19,11 @@ class OneFieldChunk(Chunk):
         UnsignedLongField('long'),
     )
 
-    @staticmethod
-    def matches(fp):
+    @classmethod
+    def matches(cls, fp):
         buf = fp.read(4)
         sig = struct.unpack('<L', buf)[0]
-        if sig == 0x010101010:
+        if sig == 0x10101010:
             return True
         else:
             fp.seek(-4, os.SEEK_CUR)
@@ -35,8 +36,8 @@ class TwoFieldChunk(Chunk):
         UnsignedShortField('short'),
     )
 
-    @staticmethod
-    def matches(fp):
+    @classmethod
+    def matches(cls, fp):
         buf = fp.read(4)
         sig = struct.unpack('<L', buf)[0]
         if sig == 0x01020304:
@@ -79,6 +80,40 @@ class ChunkTest(unittest.TestCase):
     def tearDown(self):
         self.fp.close()
         self.fake_fp.close()
+
+
+class OneFieldChunkWithProtectedMatches(Chunk):
+    Fields = (
+        UnsignedLongField('signature'),
+        UnsignedLongField('long'),
+    )
+
+    @classmethod
+    def protected_matches(cls, fp):
+        buf = fp.read(4)
+        sig = struct.unpack('<L', buf)[0]
+        if sig == 0x10101010:
+            return True
+        else:
+            return False
+
+
+class ChunkWithProtectedMatchesTest(unittest.TestCase):
+    def setUp(self):
+        fp = BytesIO()
+        sig = 0x10101010
+        fp.write(struct.pack('<L', sig))
+        long = 10
+        fp.write(struct.pack('<L', long))
+        fp.seek(0)
+
+        self.fp = FilePtr(fp, total_length=8)
+
+    def test_populate(self):
+        self.assertTrue(OneFieldChunkWithProtectedMatches.matches(self.fp))
+        c = OneFieldChunkWithProtectedMatches(self.fp, None)
+        c.populate()
+        self.assertEqual(c.long, 10)
 
 
 class TwoChunksParser(Parser):
