@@ -16,10 +16,10 @@ class Chunk(object):
 
     1. Define its fields. Fields are populated in this order. See :doc:`fields` for more information.
 
-    2. Define a :meth:`matches` or :meth:`protected_matches` class method to judge if the following bytes match this type of chunk.
+    2. Define a :meth:`matches` or :meth:`safe_matches` class method to judge if the following bytes match this type of chunk.
 
         * Override :meth:`matches` to handle :attr:`fp` state by yourself.
-        * Override :meth:`protected_matches` to get :attr:`fp` state auto saved.
+        * Override :meth:`safe_matches` to get :attr:`fp` state auto saved.
 
     Example::
 
@@ -37,7 +37,7 @@ class Chunk(object):
             )
 
             @classmethod
-            def protected_matches(fp):
+            def safe_matches(fp):
                 buf = fp.read(4)
                 type = struct.unpack('>H', buf)[0]
 
@@ -68,7 +68,7 @@ class Chunk(object):
         Read next a few bytes to judge if the following data match this type
         of chunk.
 
-        It calls :meth:`protected_matches` and restores :attr:`fp` state by default.
+        It calls :meth:`safe_matches` and restores :attr:`fp` state by default.
 
         You can override this to avoid saving :attr:`fp` state.
 
@@ -76,19 +76,19 @@ class Chunk(object):
         :returns: If the following bytes match this chunk type.
         """
         fp.save_state()
-        matches = cls.protected_matches(fp)
+        matches = cls.safe_matches(fp)
         fp.restore_state()
         return matches
 
     @classmethod
-    def protected_matches(cls, fp):
+    def safe_matches(cls, fp):
         """
-        The difference between :meth:`protected_matches` and :meth:`matches` is that if you override this, you can get your :attr:`fp` state auto saved.
+        The difference between :meth:`safe_matches` and :meth:`matches` is that if you override this, you can get your :attr:`fp` state auto saved.
 
         You only need to override one of them:
 
         * Override :meth:`matches` to handle :attr:`fp` state by yourself.
-        * Override :meth:`protected_matches` to get :attr:`fp` state auto saved.
+        * Override :meth:`safe_matches` to get :attr:`fp` state auto saved.
 
         :param fp: File object to read from.
         :returns: If the following bytes match this chunk type.

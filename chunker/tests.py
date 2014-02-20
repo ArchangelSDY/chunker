@@ -89,7 +89,7 @@ class OneFieldChunkWithProtectedMatches(Chunk):
     )
 
     @classmethod
-    def protected_matches(cls, fp):
+    def safe_matches(cls, fp):
         buf = fp.read(4)
         sig = struct.unpack('<L', buf)[0]
         if sig == 0x10101010:

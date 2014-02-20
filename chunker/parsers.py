@@ -3,7 +3,7 @@ import __future__
 import os
 import threading
 
-from utils import FilePtr
+from chunker.utils import FilePtr
 
 
 class ParseTimeoutException(Exception):
