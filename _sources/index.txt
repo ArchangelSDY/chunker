@@ -22,7 +22,7 @@ An example printing out file names in a `zip <http://en.wikipedia.org/wiki/Zip_%
 
     class InsideFileChunk(Chunk):
         Fields = (
-            # We've read signature already when doing matching
+            UnsignedLongField('signature'),
             UnsignedShortField('min_ver'),
             UnsignedShortField('general_purpose'),
             UnsignedShortField('compress_method'),
@@ -38,31 +38,27 @@ An example printing out file names in a `zip <http://en.wikipedia.org/wiki/Zip_%
             SkipBasedOnLengthField('data', 'compressed_size'),  # No need to read file content
         )
 
-        @staticmethod
-        def matches(fp):
+        @classmethod
+        def safe_matches(cls, fp):
             # Each file chunk starts with 0x04034b50
             buf = fp.read(4)
             sig = struct.unpack('<L', buf)[0]
-            if sig == 0x04034b50:
-                return True
-            else:
-                fp.seek(-4, os.SEEK_CUR)
-                return False
+            return sig == 0x04034b50:
 
     class SkipTheLeftChunk(ToTheEndChunk):
-        @staticmethod
-        def matches(fp):
+        Fields = (
+            UnsignedLongField('signature'),
+        )
+
+        @classmethod
+        def safe_matches(cls, fp):
             buf = fp.read(4)
             sig = struct.unpack('<L', buf)[0]
-            if sig != 0x04034b50:
-                return True
-            else:
-                fp.seek(-4, os.SEEK_CUR)
-                return False
+            return sig != 0x04034b50:
 
         def populate(self):
             # Skip the left
-            self.fp.seek(self.parser.total_length)
+            self.fp.seek(0, os.SEEK_END)
 
     class ZipParser(FileParser):
         ChunkClasses = (

@@ -67,9 +67,9 @@
 <em class="property">class </em><tt class="descclassname">parsers.</tt><tt class="descname">Parser</tt><big>(</big><em>fp</em>, <em>total_length=None</em><big>)</big><a class="headerlink" href="#parsers.Parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse chunks from file or streaming.</p>
 <ul class="simple">
-<li>In file mode, <a class="reference internal" href="#Parser.total_length" title="Parser.total_length"><tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt></a> can be left None and will be read from
+<li>In file mode, <tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt> can be left None and will be read from
 file system.</li>
-<li>In streaming mode, you <strong>must</strong> provide <a class="reference internal" href="#Parser.total_length" title="Parser.total_length"><tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt></a> to specify the
+<li>In streaming mode, you <strong>must</strong> provide <tt class="xref py py-attr docutils literal"><span class="pre">total_length</span></tt> to specify the
 end of the stream.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
@@ -89,9 +89,9 @@ end of the stream.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="Parser.total_length">
-<tt class="descname">total_length</tt><a class="headerlink" href="#Parser.total_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Total length of the stream.</p>
+<dt id="Parser.fp">
+<tt class="descname">fp</tt><a class="headerlink" href="#Parser.fp" title="Permalink to this definition">¶</a></dt>
+<dd><p>FilePtr object to read.</p>
 </dd></dl>
 
 <dl class="attribute">

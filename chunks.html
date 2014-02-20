@@ -25,7 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Chunker 1.0 documentation" href="index.html" /> 
+    <link rel="top" title="Chunker 1.0 documentation" href="index.html" />
+    <link rel="next" title="Fields" href="fields.html" />
+    <link rel="prev" title="Parsers" href="parsers.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +36,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fields.html" title="Fields"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="parsers.html" title="Parsers"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -64,29 +72,36 @@ type, and a group of data fields.</p>
 </tbody>
 </table>
 <p>To define your chunk class, you should follow these steps:</p>
-<ol class="arabic simple">
-<li>Define its fields. Fields are populated in this order. See <a class="reference internal" href="fields.html"><em>Fields</em></a> for more information.</li>
-<li>Define a static <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> method to judge if the following bytes match this type of chunk.</li>
+<ol class="arabic">
+<li><p class="first">Define its fields. Fields are populated in this order. See <a class="reference internal" href="fields.html"><em>Fields</em></a> for more information.</p>
+</li>
+<li><p class="first">Define a <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> or <tt class="xref py py-meth docutils literal"><span class="pre">safe_matches()</span></tt> class method to judge if the following bytes match this type of chunk.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Override <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> to handle <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state by yourself.</li>
+<li>Override <tt class="xref py py-meth docutils literal"><span class="pre">safe_matches()</span></tt> to get <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state auto saved.</li>
+</ul>
+</div></blockquote>
+</li>
 </ol>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 
-<span class="k">class</span> <span class="nc">DataChunk</span><span class="p">:</span>
+<span class="kn">from</span> <span class="nn">chunker.chunks</span> <span class="kn">import</span> <span class="n">Chunk</span>
+
+<span class="k">class</span> <span class="nc">DataChunk</span><span class="p">(</span><span class="n">Chunk</span><span class="p">):</span>
     <span class="n">Fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;sig&#39;</span><span class="p">),</span>   <span class="c"># 0x01020304</span>
         <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">),</span>
         <span class="n">UnsignedLongField</span><span class="p">(</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
         <span class="n">StringField</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="n">length_field_name</span><span class="o">=</span><span class="s">&#39;data_length&#39;</span><span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">safe_matches</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
         <span class="n">buf</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
         <span class="nb">type</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="c"># IMPORTANT! Reset position if you need to populate this type</span>
-        <span class="c"># field or type doesn&#39;t match</span>
-        <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_CUR</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">type</span> <span class="o">==</span> <span class="mh">0x01020304</span>
 
@@ -95,12 +110,13 @@ type, and a group of data fields.</p>
     <span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="c"># Access field value by its name</span>
 </pre></div>
 </div>
-<dl class="staticmethod">
+<dl class="classmethod">
 <dt id="chunks.Chunk.matches">
-<em class="property">static </em><tt class="descname">matches</tt><big>(</big><em>fp</em><big>)</big><a class="headerlink" href="#chunks.Chunk.matches" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><tt class="descname">matches</tt><big>(</big><em>fp</em><big>)</big><a class="headerlink" href="#chunks.Chunk.matches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read next a few bytes to judge if the following data match this type
 of chunk.</p>
-<p>You should override this method or it will return <tt class="xref py py-const docutils literal"><span class="pre">False</span></tt> by default.</p>
+<p>It calls <tt class="xref py py-meth docutils literal"><span class="pre">safe_matches()</span></tt> and restores <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state by default.</p>
+<p>You can override this to avoid saving <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -120,6 +136,27 @@ of chunk.</p>
 directly by field name.</p>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="chunks.Chunk.safe_matches">
+<em class="property">classmethod </em><tt class="descname">safe_matches</tt><big>(</big><em>fp</em><big>)</big><a class="headerlink" href="#chunks.Chunk.safe_matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>The difference between <tt class="xref py py-meth docutils literal"><span class="pre">safe_matches()</span></tt> and <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> is that if you override this, you can get your <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state auto saved.</p>
+<p>You only need to override one of them:</p>
+<ul class="simple">
+<li>Override <tt class="xref py py-meth docutils literal"><span class="pre">matches()</span></tt> to handle <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state by yourself.</li>
+<li>Override <tt class="xref py py-meth docutils literal"><span class="pre">safe_matches()</span></tt> to get <tt class="xref py py-attr docutils literal"><span class="pre">fp</span></tt> state auto saved.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fp</strong> &#8211; File object to read from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the following bytes match this chunk type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -130,6 +167,12 @@ directly by field name.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="parsers.html"
+                        title="previous chapter">Parsers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fields.html"
+                        title="next chapter">Fields</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/chunks.txt"
@@ -158,6 +201,12 @@ directly by field name.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="fields.html" title="Fields"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="parsers.html" title="Parsers"
+             >previous</a> |</li>
         <li><a href="index.html">Chunker 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>

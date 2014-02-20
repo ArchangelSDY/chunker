@@ -52,8 +52,8 @@
  <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#M"><strong>M</strong></a>
- | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -86,7 +86,7 @@
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="utils.html#utils.OffsetFilePtr.close">close() (utils.OffsetFilePtr method)</a>
+  <dt><a href="utils.html#utils.FilePtr.close">close() (utils.FilePtr method)</a>
   </dt>
 
   </dl></td>
@@ -99,10 +99,28 @@
   <dt><a href="fields.html#fields.Field">Field (class in fields)</a>
   </dt>
 
+      
+  <dt><a href="parsers.html#parsers.FileParser">FileParser (class in parsers)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="parsers.html#parsers.FileParser">FileParser (class in parsers)</a>
+  <dt><a href="utils.html#utils.FilePtr">FilePtr (class in utils)</a>
+  </dt>
+
+      
+  <dt><a href="parsers.html#Parser.fp">fp (Parser attribute)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="utils.html#utils.FilePtr.get_file_length">get_file_length() (utils.FilePtr static method)</a>
   </dt>
 
   </dl></td>
@@ -112,17 +130,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="chunks.html#chunks.Chunk.matches">matches() (chunks.Chunk static method)</a>
-  </dt>
-
-  </dl></td>
-</tr></table>
-
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="utils.html#utils.OffsetFilePtr">OffsetFilePtr (class in utils)</a>
+  <dt><a href="chunks.html#chunks.Chunk.matches">matches() (chunks.Chunk class method)</a>
   </dt>
 
   </dl></td>
@@ -152,7 +160,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="utils.html#utils.OffsetFilePtr.read">read() (utils.OffsetFilePtr method)</a>
+  <dt><a href="utils.html#utils.FilePtr.read">read() (utils.FilePtr method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="utils.html#utils.FilePtr.restore_state">restore_state() (utils.FilePtr method)</a>
   </dt>
 
   </dl></td>
@@ -162,19 +176,27 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="utils.html#utils.OffsetFilePtr.seek">seek() (utils.OffsetFilePtr method)</a>
+  <dt><a href="chunks.html#chunks.Chunk.safe_matches">safe_matches() (chunks.Chunk class method)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#utils.FilePtr.save_state">save_state() (utils.FilePtr method)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#utils.FilePtr.seek">seek() (utils.FilePtr method)</a>
   </dt>
 
       
   <dt><a href="fields.html#fields.SkipBasedOnCalcField">SkipBasedOnCalcField (class in fields)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="fields.html#fields.SkipBasedOnLengthField">SkipBasedOnLengthField (class in fields)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="fields.html#fields.SkipToTheEndField">SkipToTheEndField (class in fields)</a>
   </dt>
@@ -190,13 +212,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="utils.html#utils.OffsetFilePtr.tell">tell() (utils.OffsetFilePtr method)</a>
-  </dt>
-
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="parsers.html#Parser.total_length">total_length (Parser attribute)</a>
+  <dt><a href="utils.html#utils.FilePtr.tell">tell() (utils.FilePtr method)</a>
   </dt>
 
   </dl></td>
