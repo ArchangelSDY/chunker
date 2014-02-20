@@ -43,7 +43,7 @@ An example printing out file names in a `zip <http://en.wikipedia.org/wiki/Zip_%
             # Each file chunk starts with 0x04034b50
             buf = fp.read(4)
             sig = struct.unpack('<L', buf)[0]
-            return sig == 0x04034b50:
+            return sig == 0x04034b50
 
     class SkipTheLeftChunk(ToTheEndChunk):
         Fields = (
@@ -54,7 +54,7 @@ An example printing out file names in a `zip <http://en.wikipedia.org/wiki/Zip_%
         def safe_matches(cls, fp):
             buf = fp.read(4)
             sig = struct.unpack('<L', buf)[0]
-            return sig != 0x04034b50:
+            return sig != 0x04034b50
 
         def populate(self):
             # Skip the left
